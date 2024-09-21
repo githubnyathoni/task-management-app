@@ -14,3 +14,8 @@ export class UserProfileResponse {
   avatar: string;
   role: string;
 }
+
+export class UpdateUserRequest {
+  name?: string;
+  avatar?: string;
+}
