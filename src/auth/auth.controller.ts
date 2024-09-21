@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   LoginUserRequest,
-  LoginUserResponse,
   RegisterUserRequest,
   TokenRequest,
   TokenResponse,
@@ -28,7 +27,7 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() request: LoginUserRequest,
-  ): Promise<WebResponse<LoginUserResponse>> {
+  ): Promise<WebResponse<UserResponse>> {
     const result = await this.authService.login(request);
 
     return {
@@ -45,10 +44,5 @@ export class AuthController {
     return {
       data: result,
     };
-  }
-
-  @Get()
-  sayhello() {
-    return 'Hello';
   }
 }

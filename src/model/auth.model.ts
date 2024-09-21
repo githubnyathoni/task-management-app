@@ -1,4 +1,5 @@
 export class RegisterUserRequest {
+  id: string;
   email: string;
   name: string;
   password?: string;
@@ -7,6 +8,7 @@ export class RegisterUserRequest {
 }
 
 export class UserResponse {
+  id: string;
   email: string;
   name: string;
   avatar: string;
@@ -17,14 +19,6 @@ export class UserResponse {
 export class LoginUserRequest {
   email: string;
   password: string;
-}
-
-export class LoginUserResponse {
-  email: string;
-  name: string;
-  avatar: string;
-  access_token: string;
-  refresh_token: string;
 }
 
 export class TokenRequest {

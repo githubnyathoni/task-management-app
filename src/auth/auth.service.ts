@@ -5,7 +5,6 @@ import { ValidationService } from '../common/validation.service';
 import { UserService } from '../user/user.service';
 import {
   LoginUserRequest,
-  LoginUserResponse,
   RegisterUserRequest,
   TokenRequest,
   TokenResponse,
@@ -49,6 +48,7 @@ export class AuthService {
 
     const payload = {
       email: registerRequest.email,
+      sub: newUser.id,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, {
@@ -63,7 +63,7 @@ export class AuthService {
     };
   }
 
-  async login(request: LoginUserRequest): Promise<LoginUserResponse> {
+  async login(request: LoginUserRequest): Promise<UserResponse> {
     this.logger.info(`Register new user ${JSON.stringify(request)}`);
     const loginRequest = this.validationService.validate(
       AuthValidation.LOGIN,
@@ -86,7 +86,8 @@ export class AuthService {
     }
 
     const payload = {
-      email: loginRequest.email,
+      email: user.email,
+      sub: user.id,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwtService.sign(payload, {
@@ -95,6 +96,7 @@ export class AuthService {
     });
 
     return {
+      id: user.id,
       email: user.email,
       name: user.name,
       avatar: user.avatar,
@@ -121,7 +123,7 @@ export class AuthService {
     }
 
     const newAccessToken = this.jwtService.sign(
-      { email: payload.email },
+      { email: payload.email, sub: user.id },
       { expiresIn: '15m' },
     );
 
