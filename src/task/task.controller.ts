@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
@@ -10,7 +11,7 @@ import {
 import { TaskService } from './task.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { UserRequest } from 'src/model/user.model';
-import { TaskRequest } from 'src/model/task.model';
+import { TaskDetailResponse, TaskRequest } from 'src/model/task.model';
 import { MessageResponse, WebResponse } from 'src/model/web.model';
 
 @Controller('task')
@@ -45,6 +46,18 @@ export class TaskController {
       data: {
         message: 'Successfully edit the task',
       },
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async getTask(
+    @Param('id') taskId: string,
+  ): Promise<WebResponse<TaskDetailResponse>> {
+    const task = await this.taskService.getTaskById(taskId);
+
+    return {
+      data: task,
     };
   }
 }
