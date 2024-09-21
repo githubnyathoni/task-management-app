@@ -1,4 +1,4 @@
-export class CreateTaskRequest {
+export class TaskRequest {
   title: string;
   description: string;
   dueDate: string;

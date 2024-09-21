@@ -3,7 +3,7 @@ import { Task } from '@prisma/client';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { CreateTaskRequest } from 'src/model/task.model';
+import { TaskRequest } from 'src/model/task.model';
 import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
 
@@ -15,7 +15,7 @@ export class TaskService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
-  async createTask(userId: string, request: CreateTaskRequest): Promise<Task> {
+  async createTask(userId: string, request: TaskRequest): Promise<Task> {
     this.logger.info(`User ${userId} created task ${request}`);
     const filteredData = this.validationService.validate(
       TaskValidation.CREATE_TASK,
@@ -47,5 +47,48 @@ export class TaskService {
     }
 
     return newTask;
+  }
+
+  async editTask(taskId: string, request: TaskRequest): Promise<Task> {
+    this.logger.info(
+      `Updated task ${taskId} with request ${JSON.stringify(request)}`,
+    );
+    const filteredData = this.validationService.validate(
+      TaskValidation.EDIT_TASK,
+      request,
+    );
+    // Convert to datetime object if duedate is provided
+    if (filteredData.dueDate) {
+      filteredData.dueDate = new Date(filteredData.dueDate);
+    }
+
+    const updatedTask = await this.prismaService.task.update({
+      where: { id: taskId },
+      data: {
+        ...filteredData,
+      },
+    });
+
+    // Update assigned users if provided
+    if (filteredData.assignedUserIds) {
+      // Delete old assignees
+      await this.prismaService.taskAssignee.deleteMany({
+        where: { taskId },
+      });
+
+      // Create new assignees
+      const taskAssignees = filteredData.assignedUserIds.map(
+        (userId: string) => ({
+          taskId: updatedTask.id,
+          userId: userId,
+        }),
+      );
+
+      await this.prismaService.taskAssignee.createMany({
+        data: taskAssignees,
+      });
+    }
+
+    return updatedTask;
   }
 }

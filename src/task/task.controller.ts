@@ -1,9 +1,17 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { UserRequest } from 'src/model/user.model';
-import { CreateTaskRequest } from 'src/model/task.model';
-import { WebResponse } from 'src/model/web.model';
+import { TaskRequest } from 'src/model/task.model';
+import { MessageResponse, WebResponse } from 'src/model/web.model';
 
 @Controller('task')
 export class TaskController {
@@ -13,13 +21,30 @@ export class TaskController {
   @Post()
   async createTask(
     @Req() request: UserRequest,
-    @Body() createData: CreateTaskRequest,
-  ): Promise<WebResponse<any>> {
+    @Body() createData: TaskRequest,
+  ): Promise<WebResponse<MessageResponse>> {
     const userId = request.user.userId;
-    const newTask = await this.taskService.createTask(userId, createData);
+    await this.taskService.createTask(userId, createData);
 
     return {
-      data: newTask,
+      data: {
+        message: 'Successfully create the task',
+      },
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async editTask(
+    @Param('id') taskId: string,
+    @Body() request: TaskRequest,
+  ): Promise<WebResponse<MessageResponse>> {
+    await this.taskService.editTask(taskId, request);
+
+    return {
+      data: {
+        message: 'Successfully edit the task',
+      },
     };
   }
 }
