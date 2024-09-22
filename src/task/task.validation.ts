@@ -21,4 +21,9 @@ export class TaskValidation {
     content: z.string().min(1, 'Content is required'),
     taskId: z.string().uuid('Task ID must be a valid UUID'),
   });
+
+  static readonly ASSIGN_TASK: ZodType = z.object({
+    taskId: z.string().uuid('Task ID must be a valid UUID'),
+    userId: z.string().uuid('User ID must be a valid UUID'),
+  });
 }

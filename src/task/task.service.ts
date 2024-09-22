@@ -6,6 +6,7 @@ import { ValidationService } from 'src/common/validation.service';
 import {
   AddCommentRequest,
   AddCommentResponse,
+  AssignTaskRequest,
   TaskDetailResponse,
   TaskRequest,
   TaskResponse,
@@ -219,5 +220,37 @@ export class TaskService {
     });
 
     return comment;
+  }
+
+  async assignTask(request: AssignTaskRequest): Promise<void> {
+    this.logger.info(
+      `Assign task ${request.taskId} to ${JSON.stringify(request.userId)}`,
+    );
+
+    const validatedData = this.validationService.validate(
+      TaskValidation.ASSIGN_TASK,
+      request,
+    );
+
+    const taskExists = await this.prismaService.task.findUnique({
+      where: { id: validatedData.taskId },
+    });
+
+    const userExists = await this.prismaService.user.findUnique({
+      where: { id: validatedData.userId },
+    });
+
+    console.log(userExists, taskExists);
+
+    if (!taskExists || !userExists) {
+      throw new HttpException('Task or User not found', 404);
+    }
+
+    await this.prismaService.taskAssignee.create({
+      data: {
+        taskId: validatedData.taskId,
+        userId: validatedData.userId,
+      },
+    });
   }
 }

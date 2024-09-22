@@ -15,6 +15,7 @@ import { UserRequest } from 'src/model/user.model';
 import {
   AddCommentRequest,
   AddCommentResponse,
+  AssignTaskRequest,
   TaskDetailResponse,
   TaskRequest,
   TaskResponse,
@@ -111,6 +112,20 @@ export class TaskController {
 
     return {
       data: comment,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('assign')
+  async assignTask(
+    @Body() request: AssignTaskRequest,
+  ): Promise<WebResponse<MessageResponse>> {
+    await this.taskService.assignTask(request);
+
+    return {
+      data: {
+        message: 'Task successfully assigned',
+      },
     };
   }
 }

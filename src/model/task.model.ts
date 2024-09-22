@@ -51,3 +51,8 @@ export interface AddCommentResponse {
   taskId: string;
   userId: string;
 }
+
+export interface AssignTaskRequest {
+  taskId: string;
+  userId: string;
+}
