@@ -13,12 +13,14 @@ import {
 } from 'src/model/task.model';
 import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
+import { EmailService } from 'src/common/email.service';
 
 @Injectable()
 export class TaskService {
   constructor(
     private validationService: ValidationService,
     private prismaService: PrismaService,
+    private emailService: EmailService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -219,6 +221,18 @@ export class TaskService {
       },
     });
 
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+    const creator = await this.prismaService.user.findUnique({
+      where: { id: task.creatorId },
+    });
+    await this.emailService.sendCommentNotification(
+      creator.email,
+      task.title,
+      user.name,
+    );
+
     return comment;
   }
 
@@ -240,10 +254,19 @@ export class TaskService {
       where: { id: validatedData.userId },
     });
 
-    console.log(userExists, taskExists);
-
     if (!taskExists || !userExists) {
       throw new HttpException('Task or User not found', 404);
+    }
+
+    const existingAssignment = await this.prismaService.taskAssignee.findFirst({
+      where: {
+        taskId: validatedData.taskId,
+        userId: validatedData.userId,
+      },
+    });
+
+    if (existingAssignment) {
+      throw new HttpException('User already assigned to this task', 400);
     }
 
     await this.prismaService.taskAssignee.create({
@@ -252,5 +275,10 @@ export class TaskService {
         userId: validatedData.userId,
       },
     });
+
+    await this.emailService.sendTaskAssignedEmail(
+      userExists.email,
+      taskExists.title,
+    );
   }
 }

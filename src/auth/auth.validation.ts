@@ -5,7 +5,6 @@ export class AuthValidation {
     email: z.string().min(1).max(255).email(),
     name: z.string().min(1).max(100),
     password: z.string().min(1).max(100),
-    avatar: z.string().min(1).max(250),
   });
 
   static readonly LOGIN: ZodType = z.object({

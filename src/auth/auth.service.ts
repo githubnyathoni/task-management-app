@@ -43,6 +43,7 @@ export class AuthService {
 
     const newUser = await this.userService.create({
       ...registerRequest,
+      avatar: 'https://i.imgur.com/teA8hQ0.png',
       role: 'user',
     });
 
