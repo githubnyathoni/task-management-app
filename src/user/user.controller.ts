@@ -4,9 +4,9 @@ import {
   UpdateUserRequest,
   UserProfileResponse,
   UserRequest,
-} from 'src/model/user.model';
+} from '../model/user.model';
 import { UserService } from './user.service';
-import { WebResponse } from 'src/model/web.model';
+import { WebResponse } from '../model/web.model';
 
 @Controller('user')
 export class UserController {

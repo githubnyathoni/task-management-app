@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
-import { UserRequest } from 'src/model/user.model';
+import { JwtAuthGuard } from '../auth/guards/jwt.guards';
+import { UserRequest } from '../model/user.model';
 import {
   AddCommentRequest,
   AddCommentResponse,
@@ -19,10 +19,10 @@ import {
   TaskDetailResponse,
   TaskRequest,
   TaskResponse,
-} from 'src/model/task.model';
-import { MessageResponse, WebResponse } from 'src/model/web.model';
-import { RolesGuard } from 'src/auth/guards/roles.guards';
-import { Roles } from 'src/auth/decorators/roles.decorators';
+} from '../model/task.model';
+import { MessageResponse, WebResponse } from '../model/web.model';
+import { RolesGuard } from '../auth/guards/roles.guards';
+import { Roles } from '../auth/decorators/roles.decorators';
 
 @Controller('task')
 export class TaskController {

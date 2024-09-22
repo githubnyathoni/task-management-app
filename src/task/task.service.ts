@@ -1,8 +1,8 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Task } from '@prisma/client';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { PrismaService } from 'src/common/prisma.service';
-import { ValidationService } from 'src/common/validation.service';
+import { PrismaService } from '../common/prisma.service';
+import { ValidationService } from '../common/validation.service';
 import {
   AddCommentRequest,
   AddCommentResponse,
@@ -10,10 +10,11 @@ import {
   TaskDetailResponse,
   TaskRequest,
   TaskResponse,
-} from 'src/model/task.model';
+} from '../model/task.model';
 import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
-import { EmailService } from 'src/common/email.service';
+import { EmailService } from '../common/email.service';
+import { TaskGateway } from './task.gateway';
 
 @Injectable()
 export class TaskService {
@@ -21,6 +22,7 @@ export class TaskService {
     private validationService: ValidationService,
     private prismaService: PrismaService,
     private emailService: EmailService,
+    // private taskGateway: TaskGateway,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
@@ -105,6 +107,8 @@ export class TaskService {
         data: taskAssignees,
       });
     }
+
+    // this.taskGateway.server.emit('taskUpdated', updatedTask);
 
     return updatedTask;
   }
@@ -269,12 +273,14 @@ export class TaskService {
       throw new HttpException('User already assigned to this task', 400);
     }
 
-    await this.prismaService.taskAssignee.create({
+    const taskAssignee = await this.prismaService.taskAssignee.create({
       data: {
         taskId: validatedData.taskId,
         userId: validatedData.userId,
       },
     });
+
+    // this.taskGateway.server.emit('taskAssigned', taskAssignee);
 
     await this.emailService.sendTaskAssignedEmail(
       userExists.email,
