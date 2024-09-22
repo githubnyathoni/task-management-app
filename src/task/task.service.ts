@@ -8,6 +8,7 @@ import {
   AddCommentResponse,
   TaskDetailResponse,
   TaskRequest,
+  TaskResponse,
 } from 'src/model/task.model';
 import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
@@ -19,6 +20,14 @@ export class TaskService {
     private prismaService: PrismaService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
+
+  async getAllTask(): Promise<TaskResponse[]> {
+    this.logger.info(`Get All task`);
+
+    const tasks = await this.prismaService.task.findMany({});
+
+    return tasks;
+  }
 
   async createTask(userId: string, request: TaskRequest): Promise<Task> {
     this.logger.info(`User ${userId} created task ${request}`);

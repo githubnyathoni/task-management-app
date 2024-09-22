@@ -17,6 +17,7 @@ import {
   AddCommentResponse,
   TaskDetailResponse,
   TaskRequest,
+  TaskResponse,
 } from 'src/model/task.model';
 import { MessageResponse, WebResponse } from 'src/model/web.model';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
@@ -25,6 +26,16 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 @Controller('task')
 export class TaskController {
   constructor(private taskService: TaskService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAllTask(): Promise<WebResponse<TaskResponse[]>> {
+    const tasks = await this.taskService.getAllTask();
+
+    return {
+      data: tasks,
+    };
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post()

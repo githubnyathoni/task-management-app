@@ -30,6 +30,17 @@ export interface TaskDetailResponse {
   }[];
 }
 
+export interface TaskResponse {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  dueDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  creatorId: string;
+}
+
 export interface AddCommentRequest {
   content: string;
   taskId: string;
