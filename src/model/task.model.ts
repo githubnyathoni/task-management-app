@@ -29,3 +29,14 @@ export interface TaskDetailResponse {
     };
   }[];
 }
+
+export interface AddCommentRequest {
+  content: string;
+  taskId: string;
+}
+
+export interface AddCommentResponse {
+  content: string;
+  taskId: string;
+  userId: string;
+}

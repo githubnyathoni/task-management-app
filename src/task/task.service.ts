@@ -3,7 +3,12 @@ import { Task } from '@prisma/client';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from 'src/common/prisma.service';
 import { ValidationService } from 'src/common/validation.service';
-import { TaskDetailResponse, TaskRequest } from 'src/model/task.model';
+import {
+  AddCommentRequest,
+  AddCommentResponse,
+  TaskDetailResponse,
+  TaskRequest,
+} from 'src/model/task.model';
 import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
 
@@ -173,5 +178,37 @@ export class TaskService {
         id: taskId,
       },
     });
+  }
+
+  async addCommentToTask(
+    userId: string,
+    request: AddCommentRequest,
+  ): Promise<AddCommentResponse> {
+    this.logger.info(
+      `Add comment to task by ${userId} with payload ${JSON.stringify(request)}`,
+    );
+
+    const filteredData = this.validationService.validate(
+      TaskValidation.CREATE_COMMENT,
+      request,
+    );
+
+    const task = await this.prismaService.task.findUnique({
+      where: { id: filteredData.taskId },
+    });
+
+    if (!task) {
+      throw new HttpException('Task not found', 404);
+    }
+
+    const comment = await this.prismaService.comment.create({
+      data: {
+        userId,
+        taskId: filteredData.taskId,
+        content: filteredData.content,
+      },
+    });
+
+    return comment;
   }
 }

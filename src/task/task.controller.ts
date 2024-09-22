@@ -12,7 +12,12 @@ import {
 import { TaskService } from './task.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { UserRequest } from 'src/model/user.model';
-import { TaskDetailResponse, TaskRequest } from 'src/model/task.model';
+import {
+  AddCommentRequest,
+  AddCommentResponse,
+  TaskDetailResponse,
+  TaskRequest,
+} from 'src/model/task.model';
 import { MessageResponse, WebResponse } from 'src/model/web.model';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { Roles } from 'src/auth/decorators/roles.decorators';
@@ -76,6 +81,25 @@ export class TaskController {
       data: {
         message: 'Successfully delete task',
       },
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comments')
+  async addCommentToTask(
+    @Req() req: UserRequest,
+    @Param('id') taskId: string,
+    @Body() request: AddCommentRequest,
+  ): Promise<WebResponse<AddCommentResponse>> {
+    const userId = req.user.userId;
+
+    const comment = await this.taskService.addCommentToTask(userId, {
+      ...request,
+      taskId,
+    });
+
+    return {
+      data: comment,
     };
   }
 }
