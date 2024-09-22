@@ -55,7 +55,7 @@ model Comment {
   taskId     String    @db.Uuid
 
   user       User      @relation(fields: [userId], references: [id])
-  task       Task      @relation(fields: [taskId], references: [id])
+  task       Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
@@ -65,7 +65,7 @@ model TaskAssignee {
   taskId  String  @db.Uuid
   userId  String  @db.Uuid
 
-  task    Task    @relation(fields: [taskId], references: [id])
+  task    Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id])
 
   @@unique([taskId, userId])

@@ -12,6 +12,7 @@ export class UserResponse {
   email: string;
   name: string;
   avatar: string;
+  role?: string;
   access_token?: string;
   refresh_token?: string;
 }

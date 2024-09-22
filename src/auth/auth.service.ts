@@ -48,6 +48,7 @@ export class AuthService {
 
     const payload = {
       email: registerRequest.email,
+      role: newUser.role,
       sub: newUser.id,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
@@ -87,6 +88,7 @@ export class AuthService {
 
     const payload = {
       email: user.email,
+      role: user.role,
       sub: user.id,
     };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
@@ -123,7 +125,7 @@ export class AuthService {
     }
 
     const newAccessToken = this.jwtService.sign(
-      { email: payload.email, sub: user.id },
+      { email: user.email, role: user.role, sub: user.id },
       { expiresIn: '15m' },
     );
 

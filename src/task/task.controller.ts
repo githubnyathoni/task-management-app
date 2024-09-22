@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -13,6 +14,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { UserRequest } from 'src/model/user.model';
 import { TaskDetailResponse, TaskRequest } from 'src/model/task.model';
 import { MessageResponse, WebResponse } from 'src/model/web.model';
+import { RolesGuard } from 'src/auth/guards/roles.guards';
+import { Roles } from 'src/auth/decorators/roles.decorators';
 
 @Controller('task')
 export class TaskController {
@@ -58,6 +61,21 @@ export class TaskController {
 
     return {
       data: task,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Delete(':id')
+  async deleteTask(
+    @Param('id') taskId: string,
+  ): Promise<WebResponse<MessageResponse>> {
+    await this.taskService.deleteTask(taskId);
+
+    return {
+      data: {
+        message: 'Successfully delete task',
+      },
     };
   }
 }
