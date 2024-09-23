@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthValidation } from './auth.validation';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RegisterUserDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
   ) {}
 
-  async register(request: RegisterUserRequest): Promise<UserResponse> {
+  async register(request: RegisterUserDto): Promise<UserResponse> {
     this.logger.info(`Register new user ${JSON.stringify(request)}`);
     const registerRequest = this.validationService.validate(
       AuthValidation.REGISTER,

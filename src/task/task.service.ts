@@ -1,5 +1,4 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { Task } from '@prisma/client';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
@@ -15,6 +14,8 @@ import { Logger } from 'winston';
 import { TaskValidation } from './task.validation';
 import { EmailService } from '../common/email.service';
 import { TaskGateway } from './task.gateway';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { EditTaskDto } from './dto/edit-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -34,7 +35,10 @@ export class TaskService {
     return tasks;
   }
 
-  async createTask(userId: string, request: TaskRequest): Promise<Task> {
+  async createTask(
+    userId: string,
+    request: CreateTaskDto,
+  ): Promise<TaskResponse> {
     this.logger.info(`User ${userId} created task ${request}`);
     const filteredData = this.validationService.validate(
       TaskValidation.CREATE_TASK,
@@ -68,7 +72,7 @@ export class TaskService {
     return newTask;
   }
 
-  async editTask(taskId: string, request: TaskRequest): Promise<Task> {
+  async editTask(taskId: string, request: EditTaskDto): Promise<TaskResponse> {
     this.logger.info(
       `Updated task ${taskId} with request ${JSON.stringify(request)}`,
     );
